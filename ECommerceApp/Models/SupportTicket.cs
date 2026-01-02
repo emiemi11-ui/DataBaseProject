@@ -1,25 +1,58 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerceApp.Models
 {
     /// <summary>
     /// Represents a customer support ticket.
     /// </summary>
-    public partial class SupportTicket
+    [Table("SupportTickets")]
+    public class SupportTicket
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TicketID { get; set; }
+
+        [Required]
         public int CustomerID { get; set; }
+
+        [Required]
+        [MaxLength(200)]
         public string Subject { get; set; }
+
+        [Required]
+        [MaxLength(2000)]
         public string Description { get; set; }
+
+        [Required]
+        [MaxLength(50)]
         public string Status { get; set; }
+
+        [Required]
+        [MaxLength(20)]
         public string Priority { get; set; }
+
+        [Required]
         public DateTime CreatedDate { get; set; }
+
         public int? AssignedToID { get; set; }
+
         public DateTime? ResolvedDate { get; set; }
 
         // Navigation properties
+        [ForeignKey("CustomerID")]
         public virtual User Customer { get; set; }
+
+        [ForeignKey("AssignedToID")]
         public virtual User AssignedTo { get; set; }
+
+        public SupportTicket()
+        {
+            CreatedDate = DateTime.Now;
+            Status = "Open";
+            Priority = "Medium";
+        }
     }
 
     /// <summary>

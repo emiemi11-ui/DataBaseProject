@@ -1,22 +1,32 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerceApp.Models
 {
     /// <summary>
-    /// Represents a product category in the E-Commerce system.
+    /// Represents a product category.
     /// </summary>
-    public partial class Category
+    [Table("Categories")]
+    public class Category
     {
-        public Category()
-        {
-            Products = new HashSet<Product>();
-        }
-
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryID { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string CategoryName { get; set; }
+
+        [MaxLength(500)]
         public string Description { get; set; }
 
         // Navigation properties
         public virtual ICollection<Product> Products { get; set; }
+
+        public Category()
+        {
+            Products = new HashSet<Product>();
+        }
     }
 }

@@ -1,28 +1,54 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerceApp.Models
 {
     /// <summary>
-    /// Represents a customer order in the E-Commerce system.
+    /// Represents a customer order.
     /// </summary>
-    public partial class Order
+    [Table("Orders")]
+    public class Order
     {
-        public Order()
-        {
-            OrderDetails = new HashSet<OrderDetail>();
-        }
-
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderID { get; set; }
+
+        [Required]
         public int CustomerID { get; set; }
+
+        [Required]
         public DateTime OrderDate { get; set; }
-        public decimal TotalAmount { get; set; }
+
+        [Required]
+        [MaxLength(50)]
         public string OrderStatus { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TotalAmount { get; set; }
+
+        [MaxLength(500)]
         public string ShippingAddress { get; set; }
 
+        public int? ProcessedBy { get; set; }
+
         // Navigation properties
+        [ForeignKey("CustomerID")]
         public virtual User Customer { get; set; }
+
+        [ForeignKey("ProcessedBy")]
+        public virtual User Processor { get; set; }
+
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+
+        public Order()
+        {
+            OrderDate = DateTime.Now;
+            OrderStatus = "Pending";
+            OrderDetails = new HashSet<OrderDetail>();
+        }
     }
 
     /// <summary>
