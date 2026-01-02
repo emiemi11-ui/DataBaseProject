@@ -1,3 +1,4 @@
+using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,15 @@ namespace ECommerceApp.Services
     /// </summary>
     public class SupportService : ISupportService, IDisposable
     {
-        private readonly ECommerceEntities _context;
+        private readonly ECommerceDbContext _context;
         private bool _disposed;
 
         public SupportService()
         {
-            _context = new ECommerceEntities();
+            _context = new ECommerceDbContext();
         }
 
-        public SupportService(ECommerceEntities context)
+        public SupportService(ECommerceDbContext context)
         {
             _context = context;
         }

@@ -1,3 +1,4 @@
+using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,15 @@ namespace ECommerceApp.Services
     /// </summary>
     public class OrderService : IOrderService, IDisposable
     {
-        private readonly ECommerceEntities _context;
+        private readonly ECommerceDbContext _context;
         private bool _disposed;
 
         public OrderService()
         {
-            _context = new ECommerceEntities();
+            _context = new ECommerceDbContext();
         }
 
-        public OrderService(ECommerceEntities context)
+        public OrderService(ECommerceDbContext context)
         {
             _context = context;
         }
