@@ -1,0 +1,296 @@
+<UserControl x:Class="ECommerceApp.Views.CustomerServiceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="#F5F5F5">
+
+    <UserControl.Resources>
+        <!-- Button Styles -->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8E8E8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#45A049"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Bar -->
+        <Border Grid.Row="0" Background="White" Padding="20,15">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Customer Service Dashboard"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="#333333"/>
+                    <TextBlock Text="{Binding WelcomeMessage}"
+                               FontSize="12"
+                               Foreground="#666666"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Content="Logout"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Background="#F44336"
+                        Command="{Binding LogoutCommand}"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Stats Cards -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="#FFF3E0" CornerRadius="8" Padding="20" Margin="0,0,10,0">
+                    <StackPanel>
+                        <TextBlock Text="Open Tickets" FontSize="12" Foreground="#E65100"/>
+                        <TextBlock Text="{Binding OpenTicketsCount}" FontSize="32" FontWeight="Bold" Foreground="#FF9800"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="#E3F2FD" CornerRadius="8" Padding="20" Margin="5,0">
+                    <StackPanel>
+                        <TextBlock Text="In Progress" FontSize="12" Foreground="#1565C0"/>
+                        <TextBlock Text="{Binding InProgressTicketsCount}" FontSize="32" FontWeight="Bold" Foreground="#2196F3"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Background="#E8F5E9" CornerRadius="8" Padding="20" Margin="10,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Total Tickets" FontSize="12" Foreground="#2E7D32"/>
+                        <TextBlock Text="{Binding Tickets.Count}" FontSize="32" FontWeight="Bold" Foreground="#4CAF50"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Filter Bar -->
+            <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox ItemsSource="{Binding StatusOptions}"
+                              SelectedItem="{Binding SelectedStatusFilter}"
+                              Width="150"
+                              Padding="10,8"/>
+                    <Button Content="Filter"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Background="#2196F3"
+                            Command="{Binding FilterByStatusCommand}"
+                            Margin="10,0,0,0"/>
+                    <Button Content="Unassigned"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Background="#FF9800"
+                            Command="{Binding ViewUnassignedCommand}"/>
+                    <Button Content="My Tickets"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Background="#9C27B0"
+                            Command="{Binding ViewMyTicketsCommand}"/>
+                    <Button Content="Refresh"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Background="#757575"
+                            Command="{Binding RefreshCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Tickets Grid -->
+            <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="15">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.1"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="350"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Tickets List -->
+                    <DataGrid Grid.Column="0"
+                              ItemsSource="{Binding Tickets}"
+                              SelectedItem="{Binding SelectedTicket}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              BorderThickness="0"
+                              Margin="0,0,15,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Binding="{Binding TicketID}" Width="50"/>
+                            <DataGridTextColumn Header="Subject" Binding="{Binding Subject}" Width="*"/>
+                            <DataGridTextColumn Header="Customer" Binding="{Binding Customer.Username}" Width="100"/>
+                            <DataGridTemplateColumn Header="Priority" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="10" Padding="8,3" HorizontalAlignment="Left">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#E0E0E0"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Priority}" Value="High">
+                                                            <Setter Property="Background" Value="#FFCDD2"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Priority}" Value="Medium">
+                                                            <Setter Property="Background" Value="#FFE0B2"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Priority}" Value="Low">
+                                                            <Setter Property="Background" Value="#C8E6C9"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Priority}" FontSize="10"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding CreatedDate, StringFormat=MM/dd/yy}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Ticket Details Panel -->
+                    <Border Grid.Column="1" Background="#FAFAFA" CornerRadius="8" Padding="20">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Text="Ticket Details"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Subject:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.Subject, FallbackValue='Select a ticket'}"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Customer:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.Customer.Username, FallbackValue='-'}"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Email:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.Customer.Email, FallbackValue='-'}"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Description:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.Description, FallbackValue='No description'}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Assigned To:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.AssignedTo.Username, FallbackValue='Unassigned'}"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Created:" FontSize="11" Foreground="#666666"/>
+                                <TextBlock Text="{Binding SelectedTicket.CreatedDate, StringFormat=MM/dd/yyyy HH:mm, FallbackValue='-'}"
+                                           Margin="0,0,0,20"/>
+
+                                <!-- Action Buttons -->
+                                <Button Content="Assign to Me"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#2196F3"
+                                        Command="{Binding AssignToMeCommand}"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="0,0,0,8"/>
+
+                                <Button Content="Mark as Resolved"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Command="{Binding ResolveTicketCommand}"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="0,0,0,8"/>
+
+                                <Button Content="Close Ticket"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#757575"
+                                        Command="{Binding CloseTicketCommand}"
+                                        HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Messages -->
+            <StackPanel Grid.Row="3" Margin="0,15,0,0">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#F44336" FontSize="12"/>
+                <TextBlock Text="{Binding SuccessMessage}" Foreground="#4CAF50" FontSize="12"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
