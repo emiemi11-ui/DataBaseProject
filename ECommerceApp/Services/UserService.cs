@@ -1,3 +1,4 @@
+using ECommerceApp.Data;
 using ECommerceApp.Helpers;
 using ECommerceApp.Models;
 using System;
@@ -12,15 +13,15 @@ namespace ECommerceApp.Services
     /// </summary>
     public class UserService : IUserService, IDisposable
     {
-        private readonly ECommerceEntities _context;
+        private readonly ECommerceDbContext _context;
         private bool _disposed;
 
         public UserService()
         {
-            _context = new ECommerceEntities();
+            _context = new ECommerceDbContext();
         }
 
-        public UserService(ECommerceEntities context)
+        public UserService(ECommerceDbContext context)
         {
             _context = context;
         }

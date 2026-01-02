@@ -1,3 +1,4 @@
+using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,15 @@ namespace ECommerceApp.Services
     /// </summary>
     public class InventoryService : IInventoryService, IDisposable
     {
-        private readonly ECommerceEntities _context;
+        private readonly ECommerceDbContext _context;
         private bool _disposed;
 
         public InventoryService()
         {
-            _context = new ECommerceEntities();
+            _context = new ECommerceDbContext();
         }
 
-        public InventoryService(ECommerceEntities context)
+        public InventoryService(ECommerceDbContext context)
         {
             _context = context;
         }
