@@ -118,22 +118,26 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\Inventory.cs" />
-    <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\OrderDetail.cs" />
-    <Compile Include="Models\SupportTicket.cs" />
-    <Compile Include="Models\Review.cs" />
-    <Compile Include="Models\CartItem.cs" />
-    <Compile Include="Models\ECommerceEntities.cs" />
-    <Compile Include="Data\ECommerceDbContext.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Migrations\202501020000_InitialCreate.cs" />
-    <Compile Include="Migrations\202501020000_InitialCreate.Designer.cs">
-      <DependentUpon>202501020000_InitialCreate.cs</DependentUpon>
+    <!-- DB First - EDMX Generated Files -->
+    <Compile Include="Models\ECommerceModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ECommerceModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\ECommerceModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ECommerceModel.edmx</DependentUpon>
+    </Compile>
+    <!-- Partial Class Extensions for Entities -->
+    <Compile Include="Models\UserExtensions.cs" />
+    <Compile Include="Models\ProductExtensions.cs" />
+    <Compile Include="Models\OrderExtensions.cs" />
+    <Compile Include="Models\InventoryExtensions.cs" />
+    <Compile Include="Models\SupportTicketExtensions.cs" />
+    <Compile Include="Models\OtherExtensions.cs" />
+    <Compile Include="Models\CartItem.cs" />
+    <!-- Services -->
     <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\IProductService.cs" />
@@ -144,8 +148,14 @@
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ISupportService.cs" />
     <Compile Include="Services\SupportService.cs" />
+    <Compile Include="Services\IReportService.cs" />
+    <Compile Include="Services\ReportService.cs" />
+    <Compile Include="Services\IStoreSettingsService.cs" />
+    <Compile Include="Services\StoreSettingsService.cs" />
+    <!-- Stores -->
     <Compile Include="Stores\CurrentUserStore.cs" />
     <Compile Include="Stores\NavigationStore.cs" />
+    <!-- ViewModels -->
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -157,6 +167,7 @@
     <Compile Include="ViewModels\ShoppingCartViewModel.cs" />
     <Compile Include="ViewModels\OrderHistoryViewModel.cs" />
     <Compile Include="ViewModels\CustomerServiceViewModel.cs" />
+    <!-- Views Code-Behind -->
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -188,12 +199,20 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="ECommerceDB_Script.sql" />
   </ItemGroup>
+  <!-- DB First - EDMX Model -->
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202501020000_InitialCreate.resx">
-      <DependentUpon>202501020000_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
+    <EntityDeploy Include="Models\ECommerceModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ECommerceModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Models\ECommerceModel.edmx.diagram">
+      <DependentUpon>ECommerceModel.edmx</DependentUpon>
+    </None>
+  </ItemGroup>
+  <!-- Database Script -->
+  <ItemGroup>
+    <None Include="Database\ECommerceDB_Script.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
