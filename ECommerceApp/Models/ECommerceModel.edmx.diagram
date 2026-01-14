@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1" Name="Diagram1" ZoomLevel="100">
+        <EntityTypeShape EntityType="ECommerceModel.User" Width="2" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Category" Width="2" PointX="3.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Product" Width="2" PointX="6.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Inventory" Width="2" PointX="9.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Order" Width="2" PointX="0.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.OrderDetail" Width="2" PointX="3.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.SupportTicket" Width="2" PointX="6.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.TicketMessage" Width="2" PointX="9.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Review" Width="2" PointX="0.5" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.Tag" Width="2" PointX="3.5" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ECommerceModel.StoreSetting" Width="2" PointX="6.5" PointY="10.5" IsExpanded="true" />
+        <AssociationConnector Association="ECommerceModel.FK_Products_Categories" />
+        <AssociationConnector Association="ECommerceModel.FK_Products_Users" />
+        <AssociationConnector Association="ECommerceModel.FK_Inventory_Products" />
+        <AssociationConnector Association="ECommerceModel.FK_Orders_Users" />
+        <AssociationConnector Association="ECommerceModel.FK_OrderDetails_Orders" />
+        <AssociationConnector Association="ECommerceModel.FK_OrderDetails_Products" />
+        <AssociationConnector Association="ECommerceModel.FK_SupportTickets_Customer" />
+        <AssociationConnector Association="ECommerceModel.FK_SupportTickets_Assigned" />
+        <AssociationConnector Association="ECommerceModel.FK_TicketMessages_Tickets" />
+        <AssociationConnector Association="ECommerceModel.FK_TicketMessages_Users" />
+        <AssociationConnector Association="ECommerceModel.FK_Reviews_Products" />
+        <AssociationConnector Association="ECommerceModel.FK_Reviews_Users" />
+        <AssociationConnector Association="ECommerceModel.ProductTags" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

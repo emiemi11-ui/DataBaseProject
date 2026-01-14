@@ -8,15 +8,54 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Converters -->
+            <!-- =====================================================
+                 E-COMMERCE APP - MODERN MATERIAL DESIGN STYLES
+                 DB First Approach - Conform Curs 10
+                 ===================================================== -->
+
+            <!-- =====================================================
+                 CONVERTERS
+                 ===================================================== -->
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
-            <converters:StringToVisibilityConverter x:Key="StringToVisibility"/>
-            <converters:PriceToCurrencyConverter x:Key="PriceToCurrency"/>
-            <converters:StockStatusConverter x:Key="StockStatus"/>
             <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 
-            <!-- View-ViewModel DataTemplates -->
+            <!-- =====================================================
+                 COLOR PALETTE - Material Design Inspired
+                 ===================================================== -->
+            <!-- Primary Colors -->
+            <SolidColorBrush x:Key="PrimaryColor" Color="#2196F3"/>
+            <SolidColorBrush x:Key="PrimaryLightColor" Color="#64B5F6"/>
+            <SolidColorBrush x:Key="PrimaryDarkColor" Color="#1976D2"/>
+
+            <!-- Accent Colors -->
+            <SolidColorBrush x:Key="AccentColor" Color="#FF5722"/>
+            <SolidColorBrush x:Key="AccentLightColor" Color="#FF8A65"/>
+            <SolidColorBrush x:Key="AccentDarkColor" Color="#E64A19"/>
+
+            <!-- Status Colors -->
+            <SolidColorBrush x:Key="SuccessColor" Color="#4CAF50"/>
+            <SolidColorBrush x:Key="WarningColor" Color="#FF9800"/>
+            <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
+            <SolidColorBrush x:Key="InfoColor" Color="#2196F3"/>
+
+            <!-- Background Colors -->
+            <SolidColorBrush x:Key="BackgroundColor" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="SurfaceColor" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="CardColor" Color="#FFFFFF"/>
+
+            <!-- Text Colors -->
+            <SolidColorBrush x:Key="TextPrimaryColor" Color="#212121"/>
+            <SolidColorBrush x:Key="TextSecondaryColor" Color="#757575"/>
+            <SolidColorBrush x:Key="TextDisabledColor" Color="#9E9E9E"/>
+            <SolidColorBrush x:Key="TextOnPrimaryColor" Color="#FFFFFF"/>
+
+            <!-- Border Colors -->
+            <SolidColorBrush x:Key="BorderColor" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="DividerColor" Color="#BDBDBD"/>
+
+            <!-- =====================================================
+                 VIEW-VIEWMODEL DATA TEMPLATES
+                 ===================================================== -->
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <views:LoginView/>
             </DataTemplate>
@@ -29,19 +68,319 @@
             <DataTemplate DataType="{x:Type vm:CustomerServiceViewModel}">
                 <views:CustomerServiceView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ProductManagementViewModel}">
+                <views:ProductManagementView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:InventoryManagementViewModel}">
+                <views:InventoryManagementView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OrderManagementViewModel}">
+                <views:OrderManagementView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ShoppingCartViewModel}">
+                <views:ShoppingCartView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OrderHistoryViewModel}">
+                <views:OrderHistoryView/>
+            </DataTemplate>
 
-            <!-- Global Styles -->
+            <!-- =====================================================
+                 GLOBAL FONT STYLES
+                 ===================================================== -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
             </Style>
 
             <Style TargetType="TextBox">
                 <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
             </Style>
 
-            <Style TargetType="Button">
+            <Style TargetType="Label">
                 <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
             </Style>
+
+            <!-- =====================================================
+                 HEADER TEXT STYLES
+                 ===================================================== -->
+            <Style x:Key="HeaderText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                <Setter Property="Margin" Value="0,0,0,20"/>
+            </Style>
+
+            <Style x:Key="SubHeaderText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                <Setter Property="Margin" Value="0,0,0,10"/>
+            </Style>
+
+            <Style x:Key="TitleText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+            </Style>
+
+            <Style x:Key="CaptionText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Foreground" Value="{StaticResource TextSecondaryColor}"/>
+            </Style>
+
+            <!-- =====================================================
+                 PRIMARY BUTTON STYLE
+                 ===================================================== -->
+            <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="20,10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background"
+                                            Value="{StaticResource PrimaryDarkColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =====================================================
+                 ACCENT BUTTON STYLE
+                 ===================================================== -->
+            <Style x:Key="AccentButton" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="20,10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background"
+                                            Value="{StaticResource AccentDarkColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =====================================================
+                 SECONDARY BUTTON STYLE (Outlined)
+                 ===================================================== -->
+            <Style x:Key="SecondaryButton" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="20,10"/>
+                <Setter Property="BorderThickness" Value="2"/>
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background"
+                                            Value="{StaticResource PrimaryLightColor}"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =====================================================
+                 DANGER BUTTON STYLE
+                 ===================================================== -->
+            <Style x:Key="DangerButton" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ErrorColor}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="20,10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#D32F2F"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =====================================================
+                 CARD STYLE
+                 ===================================================== -->
+            <Style x:Key="Card" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource CardColor}"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="20"/>
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="10"
+                                        ShadowDepth="2"
+                                        Opacity="0.15"
+                                        Color="Black"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- =====================================================
+                 MODERN TEXTBOX STYLE
+                 ===================================================== -->
+            <Style x:Key="ModernTextBox" TargetType="TextBox">
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- =====================================================
+                 MODERN DATAGRID STYLE
+                 ===================================================== -->
+            <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+                <Setter Property="Background" Value="{StaticResource SurfaceColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="RowBackground" Value="White"/>
+                <Setter Property="AlternatingRowBackground" Value="#FAFAFA"/>
+                <Setter Property="GridLinesVisibility" Value="None"/>
+                <Setter Property="HeadersVisibility" Value="Column"/>
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="SelectionMode" Value="Single"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+
+            <!-- =====================================================
+                 DATAGRID HEADER STYLE
+                 ===================================================== -->
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Padding" Value="10,8"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+
+            <!-- =====================================================
+                 DATAGRID ROW STYLE
+                 ===================================================== -->
+            <Style TargetType="DataGridRow">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#E3F2FD"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- =====================================================
+                 STATUS INDICATOR STYLES
+                 ===================================================== -->
+            <Style x:Key="SuccessBadge" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SuccessColor}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="8,4"/>
+            </Style>
+
+            <Style x:Key="WarningBadge" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource WarningColor}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="8,4"/>
+            </Style>
+
+            <Style x:Key="ErrorBadge" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource ErrorColor}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="8,4"/>
+            </Style>
+
+            <Style x:Key="InfoBadge" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource InfoColor}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="8,4"/>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

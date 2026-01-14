@@ -1,4 +1,3 @@
-using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -9,78 +8,106 @@ namespace ECommerceApp.Services
 {
     /// <summary>
     /// Service for product-related operations.
+    /// Uses ECommerceEntities (DB First - EDMX generated context)
+    /// Implements LINQ to Entities queries - Curs 10, pag. 11-14
     /// </summary>
     public class ProductService : IProductService, IDisposable
     {
-        private readonly ECommerceDbContext _context;
+        private readonly ECommerceEntities _context;
         private bool _disposed;
 
         public ProductService()
         {
-            _context = new ECommerceDbContext();
+            _context = new ECommerceEntities();
         }
 
-        public ProductService(ECommerceDbContext context)
+        public ProductService(ECommerceEntities context)
         {
             _context = context;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all products with Eager Loading (Curs 10, pag. 12)
+        /// Uses Include() for navigation properties
+        /// </summary>
         public List<Product> GetAllProducts()
         {
             return _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Inventory)
-                .Include(p => p.StoreOwner)
+                .Include(p => p.Category)        // Eager loading
+                .Include(p => p.Inventory)       // Eager loading
+                .Include(p => p.StoreOwner)      // Eager loading
+                .Include(p => p.Tags)            // Many-to-Many
                 .OrderBy(p => p.ProductName)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets active products using LINQ Where clause
+        /// </summary>
         public List<Product> GetActiveProducts()
         {
             return _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Tags)
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.ProductName)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets product by ID with Explicit Loading (Curs 10, pag. 13)
+        /// Uses Entry().Reference().Load() and Entry().Collection().Load()
+        /// </summary>
         public Product GetProductById(int productId)
         {
-            return _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Inventory)
-                .Include(p => p.StoreOwner)
-                .Include(p => p.Reviews)
-                .FirstOrDefault(p => p.ProductID == productId);
+            var product = _context.Products.Find(productId);
+
+            if (product != null)
+            {
+                // Explicit Loading - Conform Curs 10
+                _context.Entry(product).Reference(p => p.Category).Load();
+                _context.Entry(product).Reference(p => p.Inventory).Load();
+                _context.Entry(product).Reference(p => p.StoreOwner).Load();
+                _context.Entry(product).Collection(p => p.Reviews).Load();
+                _context.Entry(product).Collection(p => p.Tags).Load();
+                _context.Entry(product).Collection(p => p.OrderDetails).Load();
+            }
+
+            return product;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets products by category with filtering
+        /// </summary>
         public List<Product> GetProductsByCategory(int categoryId)
         {
             return _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Tags)
                 .Where(p => p.CategoryID == categoryId && p.IsActive)
                 .OrderBy(p => p.ProductName)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets products by store owner
+        /// </summary>
         public List<Product> GetProductsByStoreOwner(int storeOwnerId)
         {
             return _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Tags)
                 .Where(p => p.StoreOwnerID == storeOwnerId)
                 .OrderBy(p => p.ProductName)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Searches products - Complex LINQ query
+        /// </summary>
         public List<Product> SearchProducts(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
@@ -93,6 +120,7 @@ namespace ECommerceApp.Services
             return _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Tags)
                 .Where(p => p.IsActive &&
                     (p.ProductName.ToLower().Contains(searchTerm) ||
                      p.Description.ToLower().Contains(searchTerm) ||
@@ -101,7 +129,9 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Adds a new product with automatic inventory creation
+        /// </summary>
         public bool AddProduct(Product product)
         {
             try
@@ -131,7 +161,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Updates an existing product
+        /// </summary>
         public bool UpdateProduct(Product product)
         {
             try
@@ -158,7 +190,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Soft delete - marks product as inactive
+        /// </summary>
         public bool DeleteProduct(int productId)
         {
             try
@@ -169,7 +203,6 @@ namespace ECommerceApp.Services
                     return false;
                 }
 
-                // Soft delete - just mark as inactive
                 product.IsActive = false;
                 _context.SaveChanges();
                 return true;
@@ -180,18 +213,103 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all categories
+        /// </summary>
         public List<Category> GetAllCategories()
         {
             return _context.Categories
+                .Include(c => c.Products)
                 .OrderBy(c => c.CategoryName)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets category by ID
+        /// </summary>
         public Category GetCategoryById(int categoryId)
         {
             return _context.Categories.Find(categoryId);
+        }
+
+        // =====================================================
+        // Tag Management Methods (Many-to-Many) - Curs 10
+        // =====================================================
+
+        /// <summary>
+        /// Gets all tags
+        /// </summary>
+        public List<Tag> GetAllTags()
+        {
+            return _context.Tags
+                .OrderBy(t => t.TagName)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Gets tags for a specific product
+        /// </summary>
+        public List<Tag> GetProductTags(int productId)
+        {
+            var product = _context.Products
+                .Include(p => p.Tags)
+                .FirstOrDefault(p => p.ProductID == productId);
+
+            return product?.Tags.ToList() ?? new List<Tag>();
+        }
+
+        /// <summary>
+        /// Adds a tag to a product (Many-to-Many relationship)
+        /// </summary>
+        public bool AddTagToProduct(int productId, int tagId)
+        {
+            try
+            {
+                var product = _context.Products
+                    .Include(p => p.Tags)
+                    .FirstOrDefault(p => p.ProductID == productId);
+
+                var tag = _context.Tags.Find(tagId);
+
+                if (product == null || tag == null) return false;
+
+                if (!product.Tags.Contains(tag))
+                {
+                    product.Tags.Add(tag);
+                    _context.SaveChanges();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes a tag from a product
+        /// </summary>
+        public bool RemoveTagFromProduct(int productId, int tagId)
+        {
+            try
+            {
+                var product = _context.Products
+                    .Include(p => p.Tags)
+                    .FirstOrDefault(p => p.ProductID == productId);
+
+                var tag = product?.Tags.FirstOrDefault(t => t.TagID == tagId);
+
+                if (product == null || tag == null) return false;
+
+                product.Tags.Remove(tag);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void Dispose()

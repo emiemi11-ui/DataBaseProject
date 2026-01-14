@@ -1,49 +1,28 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System;
 
 namespace ECommerceApp.Models
 {
     /// <summary>
-    /// Represents an item in the shopping cart.
-    /// This is a client-side model, not stored in database.
+    /// CartItem - In-memory shopping cart item
+    /// Not mapped to database, used for session-based cart
     /// </summary>
-    public class CartItem : INotifyPropertyChanged
+    public class CartItem
     {
-        private int _quantity;
-
         public int ProductID { get; set; }
         public string ProductName { get; set; }
+        public string ProductDescription { get; set; }
         public decimal UnitPrice { get; set; }
+        public int Quantity { get; set; }
         public string ImageURL { get; set; }
+        public string CategoryName { get; set; }
 
-        public int Quantity
-        {
-            get => _quantity;
-            set
-            {
-                if (_quantity != value)
-                {
-                    _quantity = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(Subtotal));
-                }
-            }
-        }
+        // Calculated properties
+        public decimal Subtotal => UnitPrice * Quantity;
+        public string SubtotalFormatted => $"{Subtotal:N2} RON";
+        public string UnitPriceFormatted => $"{UnitPrice:N2} RON";
 
         /// <summary>
-        /// Calculated subtotal for this cart item
-        /// </summary>
-        public decimal Subtotal => Quantity * UnitPrice;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Creates a CartItem from a Product
+        /// Creates a CartItem from a Product entity
         /// </summary>
         public static CartItem FromProduct(Product product, int quantity = 1)
         {
@@ -51,10 +30,21 @@ namespace ECommerceApp.Models
             {
                 ProductID = product.ProductID,
                 ProductName = product.ProductName,
+                ProductDescription = product.Description,
                 UnitPrice = product.Price,
+                Quantity = quantity,
                 ImageURL = product.ImageURL,
-                Quantity = quantity
+                CategoryName = product.Category?.CategoryName ?? "Uncategorized"
             };
+        }
+
+        /// <summary>
+        /// Checks if there's enough stock for the requested quantity
+        /// </summary>
+        public bool HasSufficientStock(Product product)
+        {
+            if (product?.Inventory == null) return false;
+            return product.Inventory.StockQuantity >= Quantity;
         }
     }
 }

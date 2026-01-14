@@ -1,4 +1,3 @@
-using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -8,24 +7,41 @@ using System.Linq;
 namespace ECommerceApp.Services
 {
     /// <summary>
+    /// Order status constants
+    /// </summary>
+    public static class OrderStatuses
+    {
+        public const string Pending = "Pending";
+        public const string Processing = "Processing";
+        public const string Shipped = "Shipped";
+        public const string Delivered = "Delivered";
+        public const string Cancelled = "Cancelled";
+
+        public static readonly string[] AllStatuses = { Pending, Processing, Shipped, Delivered, Cancelled };
+    }
+
+    /// <summary>
     /// Service for order-related operations.
+    /// Uses ECommerceEntities (DB First - EDMX generated context)
     /// </summary>
     public class OrderService : IOrderService, IDisposable
     {
-        private readonly ECommerceDbContext _context;
+        private readonly ECommerceEntities _context;
         private bool _disposed;
 
         public OrderService()
         {
-            _context = new ECommerceDbContext();
+            _context = new ECommerceEntities();
         }
 
-        public OrderService(ECommerceDbContext context)
+        public OrderService(ECommerceEntities context)
         {
             _context = context;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all orders with Eager Loading
+        /// </summary>
         public List<Order> GetAllOrders()
         {
             return _context.Orders
@@ -36,7 +52,9 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets order by ID with related entities
+        /// </summary>
         public Order GetOrderById(int orderId)
         {
             return _context.Orders
@@ -46,7 +64,9 @@ namespace ECommerceApp.Services
                 .FirstOrDefault(o => o.OrderID == orderId);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets orders by customer
+        /// </summary>
         public List<Order> GetOrdersByCustomer(int customerId)
         {
             return _context.Orders
@@ -57,7 +77,9 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets orders by status
+        /// </summary>
         public List<Order> GetOrdersByStatus(string status)
         {
             return _context.Orders
@@ -68,8 +90,18 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
-        public Order CreateOrder(int customerId, string shippingAddress, List<CartItem> cartItems)
+        /// <summary>
+        /// Gets pending orders count
+        /// </summary>
+        public int GetPendingOrdersCount()
+        {
+            return _context.Orders.Count(o => o.OrderStatus == OrderStatuses.Pending);
+        }
+
+        /// <summary>
+        /// Creates a new order with transaction support
+        /// </summary>
+        public Order CreateOrder(int customerId, string shippingAddress, List<CartItem> cartItems, string paymentMethod = null)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -85,7 +117,8 @@ namespace ECommerceApp.Services
                         OrderDate = DateTime.Now,
                         TotalAmount = totalAmount,
                         OrderStatus = OrderStatuses.Pending,
-                        ShippingAddress = shippingAddress
+                        ShippingAddress = shippingAddress,
+                        PaymentMethod = paymentMethod ?? "Credit Card"
                     };
 
                     _context.Orders.Add(order);
@@ -130,7 +163,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Updates order status
+        /// </summary>
         public bool UpdateOrderStatus(int orderId, string status)
         {
             try
@@ -151,7 +186,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Cancels an order and restores inventory
+        /// </summary>
         public bool CancelOrder(int orderId)
         {
             using (var transaction = _context.Database.BeginTransaction())
@@ -198,12 +235,40 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets order details for a specific order
+        /// </summary>
         public List<OrderDetail> GetOrderDetails(int orderId)
         {
             return _context.OrderDetails
                 .Include(od => od.Product)
+                .Include(od => od.Product.Category)
                 .Where(od => od.OrderID == orderId)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Gets monthly revenue
+        /// </summary>
+        public decimal GetMonthlyRevenue()
+        {
+            var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            return _context.Orders
+                .Where(o => o.OrderDate >= startOfMonth && o.OrderStatus != OrderStatuses.Cancelled)
+                .Sum(o => (decimal?)o.TotalAmount) ?? 0;
+        }
+
+        /// <summary>
+        /// Gets orders for date range
+        /// </summary>
+        public List<Order> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
+        {
+            return _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .OrderByDescending(o => o.OrderDate)
                 .ToList();
         }
 

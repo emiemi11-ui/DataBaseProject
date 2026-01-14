@@ -1,4 +1,3 @@
-using ECommerceApp.Data;
 using ECommerceApp.Helpers;
 using ECommerceApp.Models;
 using System;
@@ -10,23 +9,26 @@ namespace ECommerceApp.Services
 {
     /// <summary>
     /// Service for user-related operations.
+    /// Uses ECommerceEntities (DB First - EDMX generated context)
     /// </summary>
     public class UserService : IUserService, IDisposable
     {
-        private readonly ECommerceDbContext _context;
+        private readonly ECommerceEntities _context;
         private bool _disposed;
 
         public UserService()
         {
-            _context = new ECommerceDbContext();
+            _context = new ECommerceEntities();
         }
 
-        public UserService(ECommerceDbContext context)
+        public UserService(ECommerceEntities context)
         {
             _context = context;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Authenticates a user with username/email and password
+        /// </summary>
         public User Authenticate(string usernameOrEmail, string password)
         {
             if (string.IsNullOrWhiteSpace(usernameOrEmail) || string.IsNullOrWhiteSpace(password))
@@ -45,19 +47,35 @@ namespace ECommerceApp.Services
             return user;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets user by ID with Explicit Loading
+        /// </summary>
         public User GetUserById(int userId)
         {
-            return _context.Users.Find(userId);
+            var user = _context.Users.Find(userId);
+
+            if (user != null)
+            {
+                // Explicit Loading - Curs 10
+                _context.Entry(user).Collection(u => u.Orders).Load();
+                _context.Entry(user).Collection(u => u.CustomerTickets).Load();
+                _context.Entry(user).Collection(u => u.Reviews).Load();
+            }
+
+            return user;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets user by username
+        /// </summary>
         public User GetUserByUsername(string username)
         {
             return _context.Users.FirstOrDefault(u => u.Username == username);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all users
+        /// </summary>
         public List<User> GetAllUsers()
         {
             return _context.Users
@@ -65,7 +83,9 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets users by role
+        /// </summary>
         public List<User> GetUsersByRole(string role)
         {
             return _context.Users
@@ -74,7 +94,25 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all customers
+        /// </summary>
+        public List<User> GetAllCustomers()
+        {
+            return GetUsersByRole("Customer");
+        }
+
+        /// <summary>
+        /// Gets all customer service agents
+        /// </summary>
+        public List<User> GetAllSupportAgents()
+        {
+            return GetUsersByRole("CustomerService");
+        }
+
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
         public bool CreateUser(User user, string password)
         {
             try
@@ -103,7 +141,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Updates an existing user
+        /// </summary>
         public bool UpdateUser(User user)
         {
             try
@@ -116,6 +156,10 @@ namespace ECommerceApp.Services
 
                 existingUser.Username = user.Username;
                 existingUser.Email = user.Email;
+                existingUser.FirstName = user.FirstName;
+                existingUser.LastName = user.LastName;
+                existingUser.PhoneNumber = user.PhoneNumber;
+                existingUser.Address = user.Address;
                 existingUser.UserRole = user.UserRole;
                 existingUser.IsActive = user.IsActive;
 
@@ -128,13 +172,37 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Updates user password
+        /// </summary>
+        public bool UpdatePassword(int userId, string newPassword)
+        {
+            try
+            {
+                var user = _context.Users.Find(userId);
+                if (user == null) return false;
+
+                user.HashedPassword = PasswordHelper.ComputeSHA256Hash(newPassword);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if username exists
+        /// </summary>
         public bool UsernameExists(string username)
         {
             return _context.Users.Any(u => u.Username == username);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Checks if email exists
+        /// </summary>
         public bool EmailExists(string email)
         {
             return _context.Users.Any(u => u.Email == email);

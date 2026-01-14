@@ -1,4 +1,3 @@
-using ECommerceApp.Data;
 using ECommerceApp.Models;
 using System;
 using System.Collections.Generic;
@@ -9,23 +8,26 @@ namespace ECommerceApp.Services
 {
     /// <summary>
     /// Service for inventory-related operations.
+    /// Uses ECommerceEntities (DB First - EDMX generated context)
     /// </summary>
     public class InventoryService : IInventoryService, IDisposable
     {
-        private readonly ECommerceDbContext _context;
+        private readonly ECommerceEntities _context;
         private bool _disposed;
 
         public InventoryService()
         {
-            _context = new ECommerceDbContext();
+            _context = new ECommerceEntities();
         }
 
-        public InventoryService(ECommerceDbContext context)
+        public InventoryService(ECommerceEntities context)
         {
             _context = context;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets all inventory with Eager Loading
+        /// </summary>
         public List<Inventory> GetAllInventory()
         {
             return _context.Inventories
@@ -35,26 +37,55 @@ namespace ECommerceApp.Services
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets inventory by product ID
+        /// </summary>
         public Inventory GetInventoryByProductId(int productId)
         {
             return _context.Inventories
                 .Include(i => i.Product)
+                .Include(i => i.Product.Category)
                 .FirstOrDefault(i => i.ProductID == productId);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets low stock items
+        /// </summary>
         public List<Inventory> GetLowStockItems()
         {
             return _context.Inventories
                 .Include(i => i.Product)
                 .Include(i => i.Product.Category)
-                .Where(i => i.StockQuantity < i.MinimumStock)
+                .Where(i => i.StockQuantity < i.MinimumStock && i.Product.IsActive)
                 .OrderBy(i => i.StockQuantity)
                 .ToList();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets low stock count
+        /// </summary>
+        public int GetLowStockCount()
+        {
+            return _context.Inventories
+                .Count(i => i.StockQuantity < i.MinimumStock && i.Product.IsActive);
+        }
+
+        /// <summary>
+        /// Gets out of stock items
+        /// </summary>
+        public List<Inventory> GetOutOfStockItems()
+        {
+            return _context.Inventories
+                .Include(i => i.Product)
+                .Include(i => i.Product.Category)
+                .Where(i => i.StockQuantity <= 0 && i.Product.IsActive)
+                .OrderBy(i => i.Product.ProductName)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Updates stock quantity
+        /// </summary>
         public bool UpdateStock(int productId, int quantity)
         {
             try
@@ -81,7 +112,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Adds stock to inventory
+        /// </summary>
         public bool AddStock(int productId, int quantity)
         {
             try
@@ -108,7 +141,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Removes stock from inventory
+        /// </summary>
         public bool RemoveStock(int productId, int quantity)
         {
             try
@@ -140,7 +175,9 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Sets minimum stock threshold
+        /// </summary>
         public bool SetMinimumStock(int productId, int minimumStock)
         {
             try
@@ -167,11 +204,24 @@ namespace ECommerceApp.Services
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Checks if there's sufficient stock
+        /// </summary>
         public bool HasSufficientStock(int productId, int requestedQuantity)
         {
             var inventory = _context.Inventories.FirstOrDefault(i => i.ProductID == productId);
             return inventory != null && inventory.StockQuantity >= requestedQuantity;
+        }
+
+        /// <summary>
+        /// Gets total inventory value
+        /// </summary>
+        public decimal GetTotalInventoryValue()
+        {
+            return _context.Inventories
+                .Include(i => i.Product)
+                .Where(i => i.Product.IsActive)
+                .Sum(i => (decimal?)i.StockQuantity * i.Product.Price) ?? 0;
         }
 
         public void Dispose()
